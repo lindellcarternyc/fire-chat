@@ -1,0 +1,18 @@
+.input-container {
+  display: flex;
+  gap: 4px;
+}
+
+.input {
+  padding: 12px 8px;
+  flex: 1;
+  background: var(--color-gray);
+  border-radius: var(--border-radius);
+}
+
+.submit {
+  padding: 12px 14px;
+  background: var(--color-blue);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+}
