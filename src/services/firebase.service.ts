@@ -10,9 +10,7 @@ const firebaseConfig = {
   storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
   messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
   appId: process.env.REACT_APP_APP_ID,
-};
-
-console.log(firebaseConfig)
+}
 
 const app = initializeApp(firebaseConfig)
 const db = getFirestore(app)
@@ -35,6 +33,27 @@ const loginWithGoogle = async () => {
 
     return null
   }
+}
+
+const getMessages = (
+  roomId: string,
+  callback: (messages: MessageDTO[]) => void
+) => {
+  return onSnapshot(
+    query(
+      collection(db, "chat-rooms", roomId, "messages"),
+      orderBy("timestamp", "asc")
+    ),
+    (querySnapshot) => {
+      const messages = querySnapshot.docs.map((doc) => {
+        return {
+          id: doc.id,
+          ...doc.data(),
+        } as MessageDTO;
+      });
+      return callback(messages);
+    }
+  );
 }
 
 const sendMessage = async (
@@ -72,30 +91,20 @@ const getRooms = (callback: (rooms: { id: string, title: string }[]) => void) =>
   )
 }
 
-const getMessages = (
-  roomId: string,
-  callback: (messages: MessageDTO[]) => void
-) => {
-  return onSnapshot(
-    query(
-      collection(db, "chat-rooms", roomId, "messages"),
-      orderBy("timestamp", "asc")
-    ),
-    (querySnapshot) => {
-      const messages = querySnapshot.docs.map((doc) => {
-        return {
-          id: doc.id,
-          ...doc.data(),
-        } as MessageDTO
-      })
-      return callback(messages)
-    }
-  );
-};
+const createRoom = async (title: string) => {
+  try {
+    await addDoc(collection(db, 'chat-rooms'), {
+      title
+    })
+  } catch (err) {
+    console.error(err)
+  }
+}
 
 export {
   loginWithGoogle,
   sendMessage,
   getMessages,
-  getRooms
+  getRooms,
+  createRoom
 }
