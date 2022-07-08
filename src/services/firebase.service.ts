@@ -54,6 +54,24 @@ const sendMessage = async (
   }
 }
 
+const getRooms = (callback: (rooms: { id: string, title: string }[]) => void) => {
+  return onSnapshot(
+    query(
+      collection(db, 'chat-rooms'),
+      orderBy('title', 'asc')
+    ),
+    (querySnapshot) => {
+      const rooms = querySnapshot.docs.map(doc => {
+        return {
+          id: doc.id,
+          title: doc.data().title
+        }
+      })
+      return callback(rooms)
+    }
+  )
+}
+
 const getMessages = (
   roomId: string,
   callback: (messages: MessageDTO[]) => void
@@ -78,5 +96,6 @@ const getMessages = (
 export {
   loginWithGoogle,
   sendMessage,
-  getMessages
+  getMessages,
+  getRooms
 }
