@@ -1,7 +1,8 @@
 import { Link, useParams } from 'react-router-dom'
 
-import { chatRooms } from '../../data/chat-rooms'
 import { useAuth } from '../../hooks/use-auth'
+import { useRooms } from '../../hooks/use-rooms'
+
 import { sendMessage } from '../../services/firebase.service'
 
 import ButtonInput from '../button-input'
@@ -12,7 +13,8 @@ import classes from './chat-room.module.css'
 const ChatRoom = () => {
   const user = useAuth().user!
   const { id } = useParams<{ id: string }>()
-  const room = chatRooms.find(x => x.id === id)
+  const rooms = useRooms()
+  const room = rooms.find(room => room.id === id)
 
   if (!room) {
     return (
